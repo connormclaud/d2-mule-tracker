@@ -5,18 +5,28 @@
 
 import React, { useState, useEffect, useMemo } from 'react';
 import { Sun, Moon, Search, X, BookOpen, Layers } from 'lucide-react';
-import { MULE_ITEMS, LEVELING_ROWS, LevelBracket } from './data/guideData';
+import {
+  MULE_ITEMS,
+  MERC_GEAR_PULL_ITEMS,
+  LEVELING_ROWS,
+  LevelBracket,
+  getMercStageForLevel,
+} from './data/guideData';
 import { MuleTransferSection } from './components/MuleTransferSection';
 import { LevelingTableSection } from './components/LevelingTableSection';
+import { MercGearSection } from './components/MercGearSection';
 import { WalkthroughSection } from './components/WalkthroughSection';
 import { MilestoneTrackerBar } from './components/MilestoneTrackerBar';
 
-type DocPageMode = 'all' | 'section-1' | 'section-2' | 'section-3';
+type DocPageMode = 'all' | 'section-1' | 'section-2' | 'section-3' | 'section-4';
 
 const STORAGE_KEY_ITEMS = 'd2_holyfire_checked_items_v1';
+const STORAGE_KEY_MERC_ITEMS = 'd2_holyfire_checked_merc_items_v1';
 const STORAGE_KEY_LEVEL = 'd2_holyfire_active_level_v1';
 const STORAGE_KEY_THEME = 'd2_holyfire_theme_v1';
 const STORAGE_KEY_TRACKER_FOLDED = 'd2_holyfire_tracker_folded_v1';
+const STORAGE_KEY_TRACKER_HIDDEN = 'd2_holyfire_tracker_hidden_v1';
+const STORAGE_KEY_TRACKER_MERC = 'd2_holyfire_tracker_merc_v1';
 
 export default function App() {
   const [darkMode, setDarkMode] = useState<boolean>(() => {
@@ -31,6 +41,15 @@ export default function App() {
   const [checkedItems, setCheckedItems] = useState<Record<string, boolean>>(() => {
     try {
       const raw = localStorage.getItem(STORAGE_KEY_ITEMS);
+      return raw ? JSON.parse(raw) : {};
+    } catch {
+      return {};
+    }
+  });
+
+  const [checkedMercItems, setCheckedMercItems] = useState<Record<string, boolean>>(() => {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY_MERC_ITEMS);
       return raw ? JSON.parse(raw) : {};
     } catch {
       return {};
@@ -53,6 +72,24 @@ export default function App() {
       return saved ? saved === 'true' : false;
     } catch {
       return false;
+    }
+  });
+
+  const [trackerHidden, setTrackerHidden] = useState<boolean>(() => {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY_TRACKER_HIDDEN);
+      return saved ? saved === 'true' : false;
+    } catch {
+      return false;
+    }
+  });
+
+  const [showMercInTracker, setShowMercInTracker] = useState<boolean>(() => {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY_TRACKER_MERC);
+      return saved ? saved === 'true' : true;
+    } catch {
+      return true;
     }
   });
 
@@ -80,6 +117,14 @@ export default function App() {
 
   useEffect(() => {
     try {
+      localStorage.setItem(STORAGE_KEY_MERC_ITEMS, JSON.stringify(checkedMercItems));
+    } catch {
+      // ignore
+    }
+  }, [checkedMercItems]);
+
+  useEffect(() => {
+    try {
       localStorage.setItem(STORAGE_KEY_LEVEL, activeRowId);
     } catch {
       // ignore
@@ -93,6 +138,22 @@ export default function App() {
       // ignore
     }
   }, [trackerFolded]);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(STORAGE_KEY_TRACKER_HIDDEN, String(trackerHidden));
+    } catch {
+      // ignore
+    }
+  }, [trackerHidden]);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(STORAGE_KEY_TRACKER_MERC, String(showMercInTracker));
+    } catch {
+      // ignore
+    }
+  }, [showMercInTracker]);
 
   useEffect(() => {
     const handler = (e: Event) => {
@@ -124,8 +185,28 @@ export default function App() {
     setCheckedItems(next);
   };
 
+  const handleToggleMercItem = (id: string) => {
+    setCheckedMercItems((prev) => ({
+      ...prev,
+      [id]: !prev[id],
+    }));
+  };
+
+  const handleSetAllMercItems = (checked: boolean) => {
+    if (!checked) {
+      setCheckedMercItems({});
+      return;
+    }
+    const next: Record<string, boolean> = {};
+    for (const item of MERC_GEAR_PULL_ITEMS) {
+      next[item.id] = true;
+    }
+    setCheckedMercItems(next);
+  };
+
   const handleResetAllProgress = () => {
     setCheckedItems({});
+    setCheckedMercItems({});
     setActiveRowId('lvl-1');
     setGlobalSearch('');
   };
@@ -135,9 +216,19 @@ export default function App() {
     [checkedItems]
   );
 
+  const completedMercCount = useMemo(
+    () => MERC_GEAR_PULL_ITEMS.filter((i) => checkedMercItems[i.id]).length,
+    [checkedMercItems]
+  );
+
   const activeLevelObj = useMemo(
     () => LEVELING_ROWS.find((r) => r.id === activeRowId) || LEVELING_ROWS[0],
     [activeRowId]
+  );
+
+  const activeMercStage = useMemo(
+    () => getMercStageForLevel(activeLevelObj.numericLevel),
+    [activeLevelObj.numericLevel]
   );
 
   const handleJumpToBracket = (_bracket: LevelBracket) => {
@@ -145,6 +236,14 @@ export default function App() {
       setPageMode('section-2');
     }
   };
+
+  const sidebarStickyOffset = trackerHidden
+    ? 'lg:top-[108px]'
+    : trackerFolded
+    ? 'lg:top-[148px]'
+    : showMercInTracker
+    ? 'lg:top-[288px]'
+    : 'lg:top-[224px]';
 
   return (
     <div className="min-h-screen flex flex-col bg-stone-50 text-stone-900 dark:bg-slate-950 dark:text-slate-100">
@@ -160,7 +259,7 @@ export default function App() {
             Holy Fire Paladin 1–40 Docs
           </a>
 
-          {/* Zone 2: 4 concise single-line navigation links */}
+          {/* Zone 2: 5 concise single-line navigation links */}
           <nav className="hidden md:flex items-center gap-6 text-sm font-medium text-stone-600 dark:text-slate-300">
             <a
               href="#mule-prep"
@@ -178,25 +277,34 @@ export default function App() {
               }}
               className="hover:text-stone-900 dark:hover:text-white hover:underline underline-offset-4 transition-colors whitespace-nowrap shrink-0"
             >
-              2. Leveling Table
+              2. Leveling
+            </a>
+            <a
+              href="#merc-gear"
+              onClick={() => {
+                if (pageMode !== 'all') setPageMode('section-3');
+              }}
+              className="hover:text-stone-900 dark:hover:text-white hover:underline underline-offset-4 transition-colors whitespace-nowrap shrink-0"
+            >
+              3. Merc Gear
             </a>
             <a
               href="#walkthrough"
               onClick={() => {
-                if (pageMode !== 'all') setPageMode('section-3');
+                if (pageMode !== 'all') setPageMode('section-4');
               }}
               className="hover:text-stone-900 dark:hover:text-white hover:underline underline-offset-4 transition-colors whitespace-nowrap shrink-0"
             >
-              3. Act Walkthrough
+              4. Walkthrough
             </a>
             <a
               href="#loadouts"
               onClick={() => {
-                if (pageMode !== 'all') setPageMode('section-3');
+                if (pageMode !== 'all') setPageMode('section-4');
               }}
               className="hover:text-stone-900 dark:hover:text-white hover:underline underline-offset-4 transition-colors whitespace-nowrap shrink-0"
             >
-              4. Loadout Snapshots
+              5. Loadouts
             </a>
           </nav>
 
@@ -213,19 +321,23 @@ export default function App() {
         </div>
       </header>
 
-      {/* Frozen Active Milestone Tracker Bar (Foldable) */}
+      {/* Frozen Active Milestone Tracker Bar (Foldable & Hideable) */}
       <MilestoneTrackerBar
         activeRowId={activeRowId}
         onSelectRow={setActiveRowId}
         folded={trackerFolded}
         onToggleFold={() => setTrackerFolded((f) => !f)}
+        hidden={trackerHidden}
+        onToggleHidden={() => setTrackerHidden((h) => !h)}
+        showMerc={showMercInTracker}
+        onToggleShowMerc={() => setShowMercInTracker((m) => !m)}
       />
 
       {/* Main 1440px Documentation Workspace */}
       <div id="top" className="max-w-[1440px] w-full mx-auto flex-1 flex flex-col lg:flex-row gap-8 px-4 sm:px-8 py-6 sm:py-8">
         {/* Left Documentation Sidebar (Desktop 250px) */}
         <aside className="lg:w-64 shrink-0">
-          <div className={`lg:sticky space-y-6 ${trackerFolded ? 'lg:top-[140px]' : 'lg:top-[224px]'}`}>
+          <div className={`lg:sticky space-y-6 ${sidebarStickyOffset}`}>
             {/* Theme & Reading View Controls */}
             <div className="rounded-lg border border-stone-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-4 space-y-4">
               <div className="flex items-center justify-between">
@@ -284,7 +396,8 @@ export default function App() {
                     { id: 'all', label: 'Complete Guide (All Sections)', icon: Layers },
                     { id: 'section-1', label: '1. Mule & Stash Setup', icon: BookOpen },
                     { id: 'section-2', label: '2. Leveling Table (1–40)', icon: BookOpen },
-                    { id: 'section-3', label: '3. Act Walkthrough & Gear', icon: BookOpen },
+                    { id: 'section-3', label: '3. Merc Gear Table (20–40)', icon: BookOpen },
+                    { id: 'section-4', label: '4. Act Walkthrough & Gear', icon: BookOpen },
                   ] as const
                 ).map((mode) => {
                   const Icon = mode.icon;
@@ -331,6 +444,23 @@ export default function App() {
                 </div>
               </div>
 
+              <div className="space-y-1">
+                <div className="flex justify-between text-stone-600 dark:text-slate-400">
+                  <span>Merc Gear Pulled</span>
+                  <span className="tabular-nums font-semibold text-stone-900 dark:text-white">
+                    {completedMercCount} / {MERC_GEAR_PULL_ITEMS.length}
+                  </span>
+                </div>
+                <div className="w-full h-1.5 bg-stone-100 dark:bg-slate-800 rounded-full overflow-hidden">
+                  <div
+                    className="h-full bg-amber-600 dark:bg-amber-500 transition-transform origin-left"
+                    style={{
+                      transform: `scaleX(${completedMercCount / MERC_GEAR_PULL_ITEMS.length})`,
+                    }}
+                  />
+                </div>
+              </div>
+
               <div className="pt-2 border-t border-stone-200 dark:border-slate-800 space-y-1.5">
                 <div className="flex justify-between">
                   <span className="text-stone-500 dark:text-slate-400">Active Milestone</span>
@@ -350,6 +480,12 @@ export default function App() {
                     {activeLevelObj.effectiveVit}
                   </span>
                 </div>
+                <div className="flex justify-between">
+                  <span className="text-stone-500 dark:text-slate-400">Merc Bracket</span>
+                  <span className="tabular-nums text-stone-800 dark:text-slate-200">
+                    {activeMercStage ? `Lvl ${activeMercStage.mercLevel}` : 'Pre-20'}
+                  </span>
+                </div>
               </div>
 
               {/* Key Breakpoints Quick Reference */}
@@ -363,12 +499,14 @@ export default function App() {
                 <div>· Lvl 10: Blood Crescent + Beryl GC</div>
                 <div>· Lvl 15: Raven Claw Explosive Bow</div>
                 <div>· Lvl 17: Stealth (36 Dex) + Ocher SC</div>
+                <div>· Lvl 20: Merc Face of Horror + Hawkmail</div>
                 <div>· Lvl 23: Kinemil&apos;s Awl (+6 Holy Fire)</div>
                 <div>· Lvl 26: 2x Shimmering LCs (+14 Res)</div>
-                <div>· Lvl 27: Merc Insight + Charge</div>
+                <div>· Lvl 27: Merc Insight (2x Prayer) + Charge</div>
                 <div>· Lvl 29: Tearhaunch + 48% FHR (5-fr)</div>
                 <div>· Lvl 31: Moser&apos;s (+63 Res) + Spirit 34</div>
-                <div>· Lvl 35: Stealskull Merc + 65% CB</div>
+                <div>· Lvl 33: Merc Rockstopper (96 Base Str)</div>
+                <div>· Lvl 35: Merc Stealskull / Cure (3x Prayer)</div>
                 <div>· Lvl 37: Smoke MP + Beast Gyre Ring</div>
               </div>
             </div>
@@ -430,8 +568,20 @@ export default function App() {
             />
           )}
 
-          {/* Section 3: Per-Level & Per-Act Walkthrough */}
+          {/* Section 3: Act 2 Prayer Mercenary Gear & Progression (20–40) */}
           {(pageMode === 'all' || pageMode === 'section-3') && (
+            <MercGearSection
+              checkedMercItems={checkedMercItems}
+              onToggleMercItem={handleToggleMercItem}
+              onSetAllMercItems={handleSetAllMercItems}
+              activeNumericLevel={activeLevelObj.numericLevel}
+              onSelectLevelRow={setActiveRowId}
+              globalSearch={globalSearch}
+            />
+          )}
+
+          {/* Section 4: Per-Level & Per-Act Walkthrough */}
+          {(pageMode === 'all' || pageMode === 'section-4') && (
             <WalkthroughSection onJumpToLevelBracket={handleJumpToBracket} />
           )}
         </main>

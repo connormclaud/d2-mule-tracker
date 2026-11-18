@@ -39,10 +39,10 @@ export const WalkthroughSection: React.FC<WalkthroughSectionProps> = ({
         <div className="flex flex-wrap items-baseline justify-between gap-4">
           <div>
             <p className="text-xs font-mono tracking-wider text-stone-500 dark:text-slate-400">
-              03 · ACT-BY-ACT ROUTING, LOADOUT SNAPSHOTS & BOSS TECH
+              04 · ACT-BY-ACT ROUTING, LOADOUT SNAPSHOTS & BOSS TECH
             </p>
             <h2 className="mt-1 text-2xl sm:text-3xl font-bold tracking-tight text-stone-900 dark:text-slate-100">
-              3. Per-Level & Per-Act Walkthrough: What to Do & Wear
+              4. Per-Level & Per-Act Walkthrough: What to Do & Wear
             </h2>
           </div>
           <a

@@ -2054,3 +2054,217 @@ export const WALKTHROUGH_STAGES: WalkthroughStage[] = [
     },
   },
 ];
+
+export interface MercGearPullItem {
+  id: string;
+  slot: string;
+  item: string;
+  rarity: 'Unique' | 'Runeword' | 'Combo';
+  exactLocation: string;
+  equipLvl: string;
+  reqStr: string;
+  whyMercWantsIt: string;
+}
+
+export const MERC_GEAR_PULL_ITEMS: MercGearPullItem[] = [
+  {
+    id: 'merc-face-of-horror',
+    slot: 'Helm (20–34)',
+    item: 'The Face of Horror (Mask)',
+    rarity: 'Unique',
+    exactLocation: 'Shared Stash Tab 2',
+    equipLvl: '20',
+    reqStr: '23',
+    whyMercWantsIt:
+      '+20 Strength, +10 All Res, +50% Undead Dmg. Bridges the 95 Str requirement for Insight (Bill) at Level 27!',
+  },
+  {
+    id: 'merc-hawkmail',
+    slot: 'Armor (20–27)',
+    item: 'Hawkmail (Scale Mail)',
+    rarity: 'Unique',
+    exactLocation: 'mule_unique Stash',
+    equipLvl: '15 (at 20)',
+    reqStr: '44',
+    whyMercWantsIt:
+      'Cannot Be Frozen + 15% Cold Res / Max Cold Res (huge vs. Duriel) + 10% FRW.',
+  },
+  {
+    id: 'merc-battlebranch',
+    slot: 'Weapon (25–26)',
+    item: 'The Battlebranch (Poleaxe)',
+    rarity: 'Unique',
+    exactLocation: 'mule_leveling Stash',
+    equipLvl: '25',
+    reqStr: '62',
+    whyMercWantsIt: '7% Life Leech, +30% IAS, +56% ED, +98 AR.',
+  },
+  {
+    id: 'merc-insight-bill',
+    slot: 'Weapon (27–40)',
+    item: 'Insight (Bill)',
+    rarity: 'Runeword',
+    exactLocation: 'mule_leveling Stash',
+    equipLvl: '27',
+    reqStr: '95',
+    whyMercWantsIt: 'Level 15 Meditation, +235% ED, +5 All Stats, +229% AR.',
+  },
+  {
+    id: 'merc-goldskin-spirit-shroud',
+    slot: 'Armor (28–40)',
+    item: 'Goldskin (Full Plate Mail) or The Spirit Shroud',
+    rarity: 'Unique',
+    exactLocation: 'mule_unique Stash / Shared Stash Tab 3',
+    equipLvl: '28',
+    reqStr: '80 / 38',
+    whyMercWantsIt:
+      'Goldskin: +35 All Res, 382 Def. Spirit Shroud: Cannot Be Frozen, +1 All Skills (boosts Prayer!), MDR 9.',
+  },
+  {
+    id: 'merc-stealskull-cure',
+    slot: 'Helm (35–40)',
+    item: 'Stealskull (Casque) or Cure (Crown)',
+    rarity: 'Combo',
+    exactLocation: 'sork Equipped / Shared Stash Tab 1',
+    equipLvl: '35',
+    reqStr: '59 / 55',
+    whyMercWantsIt:
+      'Stealskull: 5% Life Leech + 10% IAS (keeps Merc alive since Insight has no leech). Cure: Lvl 1 Cleansing (unlocks 3x Prayer regen!).',
+  },
+  {
+    id: 'merc-vamp-duriels',
+    slot: 'Lvl 41+ Next',
+    item: "Vampire Gaze [Eth] + Duriel's Shell",
+    rarity: 'Unique',
+    exactLocation: 'Shared Stash Tab 1 & 4',
+    equipLvl: '41',
+    reqStr: '48 / 65',
+    whyMercWantsIt:
+      "At Lvl 41, pair Cure or Vamp Gaze (6% LL, 17% DR) with Duriel's Shell (CBF, +15 Str, +Res), then Treachery (sork Merc) at Lvl 43.",
+  },
+];
+
+export interface MercProgressionStage {
+  id: string;
+  mercLevel: string;
+  minLevel: number;
+  maxLevel: number;
+  targetRowId: string;
+  zoneAct: string;
+  mercBaseStr: string;
+  weapon: string;
+  helmet: string;
+  bodyArmor: string;
+  keyNotes: string;
+  auraStatus: string;
+  compactSummary: string;
+}
+
+export const MERC_PROGRESSION_STAGES: MercProgressionStage[] = [
+  {
+    id: 'merc-20-24',
+    mercLevel: '20–24',
+    minLevel: 20,
+    maxLevel: 24,
+    targetRowId: 'lvl-20',
+    zoneAct: 'Act 2 (Halls / Maggot / Viper / Arcane)',
+    mercBaseStr: '73–79',
+    weapon:
+      'Shop any Magic/Rare Polearm from Fara (or Savage Polearm Cube recipe: Kris + Belt + Staff + Diamond)',
+    helmet: 'The Face of Horror (+20 Str, +10 All Res)',
+    bodyArmor: 'Hawkmail (Cannot Be Frozen, +15% Cold Res)',
+    keyNotes:
+      'The Face of Horror boosts Merc Str to 93+, and Hawkmail prevents him from being slowed by Cold mobs & Duriel.',
+    auraStatus: '1x Prayer (A2 Combat)',
+    compactSummary: 'Merc 20–24 (73–79 Str) · Fara Polearm · Face of Horror · Hawkmail',
+  },
+  {
+    id: 'merc-25-26',
+    mercLevel: '25–26',
+    minLevel: 25,
+    maxLevel: 26,
+    targetRowId: 'lvl-25',
+    zoneAct: 'Act 2 (Tombs / Duriel) → Early Act 3',
+    mercBaseStr: '81–83',
+    weapon: 'The Battlebranch (+30% IAS, 7% Life Leech)',
+    helmet: 'The Face of Horror (+20 Str, +10 All Res)',
+    bodyArmor: 'Hawkmail (Cannot Be Frozen)',
+    keyNotes:
+      "7% Life Leech + 30% IAS makes him tanky for Tal Rasha's Tombs and Duriel (feed him 2–3 Thawing Potions before Duriel).",
+    auraStatus: '1x Prayer (A2 Combat)',
+    compactSummary: 'Merc 25–26 (81–83 Str) · The Battlebranch · Face of Horror · Hawkmail',
+  },
+  {
+    id: 'merc-27',
+    mercLevel: '27',
+    minLevel: 27,
+    maxLevel: 27,
+    targetRowId: 'lvl-27',
+    zoneAct: 'Act 3 (Jungle / Kurast)',
+    mercBaseStr: '85 (105 w/ Helm)',
+    weapon: 'Insight (Bill) (Req 95 Str, Lvl 15 Meditation)',
+    helmet: 'The Face of Horror (Required for +20 Str!)',
+    bodyArmor: 'Hawkmail',
+    keyNotes:
+      "Major Spike: Your Merc's base Str is only ~85 at Lvl 27, so keep The Face of Horror on to hit 105 Str and equip Insight (Bill) immediately. 2x Prayer healing + infinite Mana is now active!",
+    auraStatus: '2x Prayer + Lvl 15 Meditation',
+    compactSummary: 'Merc 27 (85→105 Str) · Insight (Bill) · Face of Horror · Hawkmail · 2x Prayer',
+  },
+  {
+    id: 'merc-28-32',
+    mercLevel: '28–32',
+    minLevel: 28,
+    maxLevel: 32,
+    targetRowId: 'lvl-28',
+    zoneAct: 'Act 3 (Travincal / Mephisto) → Act 4 (Izual)',
+    mercBaseStr: '87–94 (107–114 w/ Helm)',
+    weapon: 'Insight (Bill)',
+    helmet: 'The Face of Horror (Keep on until Lvl 33)',
+    bodyArmor: 'The Spirit Shroud (CBF, +1 Skills, MDR 9) or Goldskin (+35 All Res)',
+    keyNotes:
+      'Upgrade armor at Lvl 28. The Spirit Shroud adds +1 to Prayer (boosting both Prayer & Meditation healing ticks) while keeping Cannot Be Frozen.',
+    auraStatus: '2x Prayer (+1 Skills w/ Spirit Shroud)',
+    compactSummary: 'Merc 28–32 (87–94 Str) · Insight (Bill) · Face of Horror · Spirit Shroud / Goldskin',
+  },
+  {
+    id: 'merc-33-34',
+    mercLevel: '33–34',
+    minLevel: 33,
+    maxLevel: 34,
+    targetRowId: 'lvl-33',
+    zoneAct: 'Act 4 (Chaos Sanctuary / Diablo)',
+    mercBaseStr: '96–98 (Meets 95 Str naturally!)',
+    weapon: 'Insight (Bill)',
+    helmet: 'Rockstopper (Shared Stash Tab 4: 10% DR, +48% FR, +30% LR, +27% CR)',
+    bodyArmor: 'The Spirit Shroud or Goldskin',
+    keyNotes:
+      "At Level 33, your Merc reaches 96 base Strength and no longer needs The Face of Horror to hold Insight (Bill). Swap helm to Rockstopper so he survives Diablo's Fire/Lightning!",
+    auraStatus: '2x Prayer (96+ Natural Str)',
+    compactSummary: 'Merc 33–34 (96–98 Str) · Insight (Bill) · Rockstopper · Spirit Shroud / Goldskin',
+  },
+  {
+    id: 'merc-35-40',
+    mercLevel: '35–40',
+    minLevel: 35,
+    maxLevel: 40,
+    targetRowId: 'lvl-35',
+    zoneAct: 'Act 5 (Shenk / Anya / Ancients / Baal Runs)',
+    mercBaseStr: '100–109',
+    weapon: 'Insight (Bill)',
+    helmet: 'Stealskull (5% LL, +10% IAS, 46% MF) OR Cure (Lvl 1 Cleansing)',
+    bodyArmor: 'Goldskin (+35 All Res) or The Spirit Shroud (CBF, +1 Skills)',
+    keyNotes:
+      "Choose Stealskull if your Merc takes heavy melee damage (gives him 5% Life Leech which Insight lacks). Choose Cure with The Spirit Shroud for the Triple-Prayer Aura (Prayer + Meditation + Cleansing) that heals ~45+ HP every 2 seconds and clears Baal's curses/poison!",
+    auraStatus: '3x Prayer (w/ Cure) or 5% LL (Stealskull)',
+    compactSummary: 'Merc 35–40 (100–109 Str) · Insight (Bill) · Stealskull / Cure · Goldskin / Spirit Shroud',
+  },
+];
+
+export function getMercStageForLevel(numericLevel: number): MercProgressionStage | null {
+  return (
+    MERC_PROGRESSION_STAGES.find(
+      (stage) => numericLevel >= stage.minLevel && numericLevel <= stage.maxLevel
+    ) || null
+  );
+}
+
