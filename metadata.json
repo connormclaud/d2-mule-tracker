@@ -1,0 +1,6 @@
+{
+  "name": "Holy Fire Paladin 1–40 Leveling Docs",
+  "description": "High-performance interactive documentation and mule checklist for a custom Levels 1–40 Holy Fire Paladin leveling build.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
