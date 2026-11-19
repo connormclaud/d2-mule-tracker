@@ -150,12 +150,13 @@ const TOKEN_RULES: TokenRule[] = [
   { pattern: 'FoH', kind: 'skill' },
 ];
 
+// WCAG AA compliant semantic D2 rarity colors in both Light Paper and Dark Slate themes
 const KIND_CLASS: Record<TokenKind, string> = {
   unique: 'text-amber-800 dark:text-amber-300 font-semibold',
   set: 'text-emerald-800 dark:text-emerald-400 font-semibold',
   runeword: 'text-orange-800 dark:text-orange-300 font-semibold',
-  magic: 'text-blue-800 dark:text-blue-400 font-semibold',
-  rare: 'text-yellow-700 dark:text-yellow-300 font-semibold',
+  magic: 'text-blue-800 dark:text-sky-400 font-semibold',
+  rare: 'text-yellow-800 dark:text-yellow-300 font-semibold',
   base: 'text-stone-900 dark:text-slate-100 font-semibold',
   skill: 'text-rose-700 dark:text-rose-400 font-semibold',
 };
@@ -213,3 +214,19 @@ export const RichGuideText: React.FC<RichGuideTextProps> = ({ text }) => {
 
   return <>{parts}</>;
 };
+
+export const RarityLegend: React.FC = () => (
+  <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-stone-500 dark:text-slate-400">
+    <span className="text-rose-700 dark:text-rose-400 font-semibold">Skill</span>
+    <span aria-hidden="true">·</span>
+    <span className="text-amber-800 dark:text-amber-300 font-semibold">Unique</span>
+    <span aria-hidden="true">·</span>
+    <span className="text-emerald-800 dark:text-emerald-400 font-semibold">Set</span>
+    <span aria-hidden="true">·</span>
+    <span className="text-orange-800 dark:text-orange-300 font-semibold">Runeword</span>
+    <span aria-hidden="true">·</span>
+    <span className="text-blue-800 dark:text-sky-400 font-semibold">Magic</span>
+    <span aria-hidden="true">·</span>
+    <span className="text-yellow-800 dark:text-yellow-300 font-semibold">Rare</span>
+  </div>
+);
